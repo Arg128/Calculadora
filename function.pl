@@ -1,32 +1,20 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use CGI qw(:standard);
 
-#Se usa de CGI
+# Imprime como tipo HTML
+print "Content-type: text/html\n\n";
+print "<html><head><title>Resultado</title></head><body>";
 
+# Inicializa la ecuación directamente
+my $ecuacion = "(2+2) (8*6)";
 
-my $query = new --> CGI();
-my $expresion = $query --> param('ecuacion');
-
-##imprime como tipo html
-print header(text/html);
-##Titulo
-print start_html('Resultado');
-
-##Ahora se esta añadiendo una expreción, con ayuda de bucle para encontrar todas las posibles 
-##operaciónes, y detectar su formato de cambio [\+\-\*\/]
-
-##                            $1                  $2      $3      $4      $5
-##Este \s separa a $2 y a $4, ya que estos contienen espaciós, pero con \s este modifica y quita
-##Dejando así una expresión solo con los numeros...
-my $ecuacion = "( 2 * 2 )";
-while ($ecuacion =~ /(\()(\d+(\.\d+)?|\.\d+)\s*([\+\-\*\/])\s*(\d+(\.\d+)?|\.\d+)(\))/g) {
-    my $paren_abierto = $1;
+# Ahora se añade una expresión para encontrar todas las posibles operaciones
+while ($ecuacion =~ /(\(\s*(\d+(\.\d+)?|\.\d+)\s*([\+\-\*\/])\s*(\d+(\.\d+)?|\.\d+)\s*\))/g) {
+    my $expresion = $1; 
     my $num1 = $2;
     my $op = $4;
     my $num2 = $5;
-    my $paren_cerrado = $7;
 
     # Detecta y manipula la expresión
     my $resultado;
@@ -41,9 +29,13 @@ while ($ecuacion =~ /(\()(\d+(\.\d+)?|\.\d+)\s*([\+\-\*\/])\s*(\d+(\.\d+)?|\.\d+
     }
 
     # Reemplaza en la cadena original
-    $ecuacion =~ s/\Q$paren_abierto$num1\s*$op\s*$num2$paren_cerrado\E/($resultado)/;
-    print "<p> El resultado de $num1 $op $num2 es $resultado </p>";
-    print $ecuacion;
+
+    $ecuacion =~ s/\Q$expresion\E/$resultado/;
+    print "<p> El resultado de $num1 $op $num2 es $resultado </p> $ecuacion";
+    print "<p> Ecuación evaluada: $ecuacion </p>"
 }
 
-print end_html();
+# Imprime el resultado final
+print "<p> Ecuación evaluada: $ecuacion </p>";
+print "</body></html>";
+
